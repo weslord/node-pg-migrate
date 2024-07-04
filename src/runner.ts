@@ -309,6 +309,17 @@ export async function runner(options: RunnerOption): Promise<RunMigration[]> {
       migrations
     );
 
+    if (options.direction === 'status') {
+      console.log("Migration Status")
+      console.log("================")
+
+      migrations.forEach(migration => {
+        console.log(` ${runNames.includes(migration.name) ? '[X]' : '[ ]'}  ${migration.name}`)
+      })
+      // console.log('status:', {migrations, runNames, toRun})
+      return []
+    }
+
     if (toRun.length === 0) {
       logger.info('No migrations to run!');
       return [];
@@ -319,7 +330,7 @@ export async function runner(options: RunnerOption): Promise<RunMigration[]> {
     for (const m of toRun) {
       logger.info(`> - ${m.name}`);
     }
-
+    
     if (options.fake) {
       await runMigrations(toRun, 'markAsRun', options.direction);
     } else if (options.singleTransaction) {

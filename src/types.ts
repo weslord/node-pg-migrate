@@ -795,7 +795,7 @@ export interface RunnerOptionConfig {
   /**
    * Direction of migration-run.
    */
-  direction: MigrationDirection;
+  direction: MigrationDirection | 'status';
 
   /**
    * Number of migration to run.

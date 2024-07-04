@@ -16,6 +16,7 @@ import ConnectionParameters from 'pg/lib/connection-parameters.js';
 import yargs from 'yargs/yargs';
 import type { RunnerOption } from '../src';
 import type { FilenameFormat } from '../src/migration';
+import type { MigrationDirection } from '../src/types';
 
 process.on('uncaughtException', (err) => {
   console.error(err);
@@ -486,7 +487,7 @@ if (action === 'create') {
       console.error(error);
       process.exit(1);
     });
-} else if (action === 'up' || action === 'down' || action === 'redo') {
+} else if (action === 'status' ||  action === 'up' || action === 'down' || action === 'redo') {
   if (!DB_CONNECTION) {
     const cp = new ConnectionParameters();
 
@@ -534,7 +535,7 @@ if (action === 'create') {
       : DB_CONNECTION;
 
   const options: (
-    direction: 'up' | 'down',
+    direction: MigrationDirection | 'status',
     count?: number,
     timestamp?: boolean
   ) => RunnerOption = (direction, _count, _timestamp) => {
@@ -586,7 +587,9 @@ if (action === 'create') {
       : migrationRunner(options(action));
   promise
     .then(() => {
-      console.log('Migrations complete!');
+      if (action !== 'status') {
+        console.log('Migrations complete!');
+      }
       process.exit(0);
     })
     .catch((error: unknown) => {
